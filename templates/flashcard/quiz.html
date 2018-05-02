@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}FlashCard{% endblock %}
+
+{% block content %}
+
+<!-- Score Display -->
+
+<p>Total Score:  <span class="badge badge-pill badge-success" id='score'>0</span>/8 </p>
+<div id='propt' class="text-hide">Congratulations! You have finishing the whole word list! </div>
+<!-- QUIZ choice -->
+<div class="quizjumbotron p-3 p-md-3 text-dark rounded" align="left">
+<div>
+<h1 id='word' class="logo" align="center">{{word}}</h1>
+</div>
+<div class="radio">
+	<label>
+		<input type="radio" name="ans" id="ans1" value="option1" checked>
+			<label for="square-radio-1" id="ans1_text" class>{{ ans1 }}</label> 
+	</label>
+</div>
+
+
+<div class="radio">
+	<label>
+		<input type="radio" name="ans" id="ans2" value="option2">
+		<label for="square-radio-1" id="ans2_text" class>{{ ans2 }}</label> 
+	</label>
+</div>
+
+
+<div class="radio">
+	<label>
+		<input type="radio" name="ans"  id="ans3" value="option1" checked> 
+			<label for="square-radio-1"  id="ans3_text" class>{{ ans3}}</label> 
+	</label>
+</div>
+
+<div class="radio">
+	<label>
+		<input type="radio" name="ans" id="ans4" value="option1" checked>
+		<label for="square-radio-1" id="ans4_text" class>{{ ans4 }}</label> 
+	</label>
+</div>
+</div>
+<!-- Go To Next -->
+<div>
+<a class="btn btn-outline-info btn-block" id='next' align="center" disabled='disabled'>Next</a>
+</div>
+<p></p>
+<div>
+<a class="btn btn-info btn-block" href='{% url "home" %}'align="center" disabled='disabled'>Back to home</a>
+</div>
+
+
+
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+var x=0;
+var score=0;
+var index_cur=4;
+var index_next=0;
+$(document).ready(function(){
+
+
+  $('input').iCheck({
+    checkboxClass: 'icheckbox_square-blue',
+    radioClass: 'iradio_square-blue',
+    increaseArea: '100%' // optional
+  });
+  $('#next').click(function(){
+  	var result=0;
+	var choice=0;
+	var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+	if(x==0){
+		index_cur={{right_idx}}
+	}
+	if($('#ans1').is(':checked')) {
+		choice=0;
+	}
+	else if($('#ans2').is(':checked')){
+		choice=1;
+	}
+	else if($('#ans3').is(':checked')){
+		choice=2;
+	}
+	else if($('#ans4').is(':checked')){
+		choice=3;
+	}
+	
+	if(choice==index_cur){
+		score=score+1;
+		$("#score").html(score);
+		result=1;
+	}
+	else{
+		result=0;
+	}
+	
+	if(x==8){
+		$('#next').addClass('disabled');
+		$('#propt').attr('class','alert alert-success');
+		$('#propt').html('You have complete all quiz!');
+	}
+	else{
+	$.post('/card/quiz/{{lexicon}}/'+(x+1)+'/', { 
+           'result': result,
+           'word': $("#word").text(),
+           csrfmiddlewaretoken: CSRFtoken
+       	},function(result){
+   		$("#word").html(result['word']);
+   		$('#ans1_text').html(result['ans1']);
+   		$('#ans2_text').html(result['ans2']);
+   		$('#ans3_text').html(result['ans3']);
+   		$('#ans4_text').html(result['ans4']);
+   		index_next=result['right_idx'];
+   	});
+   	index_cur=index_next
+   	$('#x').html(index_next)
+	x=x+1;	
+
+	}
+	});
+
+
+
+
+});
+
+
+
+</script>
+{% endblock %}

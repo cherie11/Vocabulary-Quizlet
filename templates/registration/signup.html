@@ -1,0 +1,20 @@
+<!-- templates/signup.html -->
+{% extends 'base.html' %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <div class="row" style="display:inline-bolck">
+    <div class="col-md-8 col-sm-10 col-12">
+      <h2>Sign up for a free account ^_^ </h2>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success">Sign up</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

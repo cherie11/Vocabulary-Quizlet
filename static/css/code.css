@@ -1,0 +1,13 @@
+body {
+  background-color: "aliceblue";
+}
+.blocks .btn-primary 
+{
+    padding: 5px 10px;
+    margin: 0 5px;  
+    border-radius: 0;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+}
+

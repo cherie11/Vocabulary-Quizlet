@@ -1,0 +1,84 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<div class="jumbotron p-3 p-md-3 text-white rounded bg-dark">
+	<div class="col-md-8 px-0">
+		<h1 class="logo">
+			Vocabulary FlashCard
+		</h1>
+		{% if user.is_authenticated %}
+		  Hi {{ user.username }}!
+
+		{% else %}
+
+		  <p class="lead my-3">Create an account to save your progress.It's free and only takes a minute!</p>
+		  <p><a href="{% url 'signup' %}" class="btn btn-primary ml-2">Create Account</a>
+		  	or
+		  	<a href="{% url 'login' %}">Sign in</a>
+
+		  </p>
+	</div>
+	
+</div>
+
+{% endif %}
+
+{% if user.is_authenticated %}
+<div>
+	
+	<div class="card border-info mb-3">
+			  <img class="card-img-top" src="..." alt="Card image cap">
+
+			  <div class="card-body text-info">
+			    <h5 class="card-title">Tofel words 1</h5>
+			    <p class="card-text">0 of 50 words mastered</p>
+			    <a href="{% url 'lexicon' slug='toefl' known=2 %}" class="btn btn-info">Practice this deck</a>
+			    <a href="{% url 'quiz' slug='toefl' id='0' %}" class="btn btn-outline-secondary">Quiz</a>
+			  </div>
+	</div>
+	<div class="card border-success mb-3">
+			  <img class="card-img-top" src="..." alt="Card image cap">
+
+			  <div class="card-body text-success">
+			    <h5 class="card-title">SAT words 2</h5>
+			    <p class="card-text">0 of 50 words mastered</p>
+			    <a href="{% url 'card' %}" class="btn btn-success">Practice this deck</a>
+			    <a href="{% url 'card' %}" class="btn btn-success">Quiz</a>
+			  </div>
+	</div>
+	<div class="card border-warning mb-3">
+			  <img class="card-img-top" src="..." alt="Card image cap">
+
+			  <div class="card-body text-warning">
+			    <h5 class="card-title">Toefl words list 1 </h5>
+			    <p class="card-text">0 of 50 words mastered</p>
+			    <a href="{% url 'card' %}" class="btn btn-warning">Practice this deck</a>
+			  </div>
+	</div>
+	<div class="card border-danger mb-3">
+			  <img class="card-img-top" src="..." alt="Card image cap">
+
+			  <div class="card-body text-danger">
+			    <h5 class="card-title">Toefl words list 2</h5>
+			    <p class="card-text">0 of 50 words mastered</p>
+			    <a href="{% url 'card' %}" class="btn btn-danger">Practice this deck</a>
+			  </div>
+	</div>
+</div>
+
+{% else %}
+<div></div>
+{% endif %}
+
+
+
+
+
+
+  
+
+{% endblock %}

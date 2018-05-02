@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}FlashCard{% endblock %}
+
+{% block content %}
+
+<div class="myjumbotron p-3 p-md-3 text-dark rounded" align="center">
+	<span class="badge badge-pill badge-info float-right" id='is_new_label'>
+		{%if is_new %}
+		New
+		{%else %}
+		Review
+		{% endif %}
+		</span>
+	<h1 id='word'>{{ word }}</h1>
+	<p id='phonetic'>{{ phonetic }}</p>	
+
+	  
+	  <p class="btn-group-vertical btn-block" role="group" aria-label="Vertical button group">
+	    <button type="button" id="know"  class="btn btn-success btn-lg btn-block">✔️ I knew this word! </button>
+	    <button type="button" id="not_know"  class="btn btn-danger btn-lg btn-block">× I didn't know it QAQ</button>
+	  </p>
+	  <p></p>
+	  <a class="btn btn-primary text-center" data-toggle="collapse" href="#meaning" role="button" aria-expanded="false" aria-controls="meaning">
+	    See meaning 
+	  </a>
+
+	</p>
+	<div class="collapse" id="meaning">
+	  <p class="card card-body" id='mean_text'>
+	   {{ meaning }}
+	  </p>
+	  
+	</div>
+</div>
+
+<div class="myjumbotron p-3 p-md-3 text-dark  rounded">
+	<div class="bd-example">
+	<p >You have masterd <a id='master_num'>{{ master_num }} </a> out of <a id='total_num'>{{total_num}}</a> words </p>
+		<div class="progress progress-striped active" style="margin-top:10px;margin-bottom:10px;">
+
+		  <div id='master_bar' class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: {% widthratio master_num total_num 100%}%" aria-valuemin="0" aria-valuemax="{{total_num}}">
+		  	
+		  </div>
+		</div>
+	<p >You need to review <a id='rev_num'>{{rev_num}}</a> out of <a id='total_num'>{{total_num}} words</a> </p>
+		<div class="progress progress-striped active" style="margin-top:10px;margin-bottom:10px;">
+		  <div id='rev_bar' class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: {% widthratio rev_num total_num 100%}%"  aria-valuemin="0" aria-valuemax="{{total_num}}"></div>
+		</div>
+	<p >You are unfamiliar with <a id='new_num'>{{new_num}}</a> out of <a id='total_num'>{{total_num}}</a> words </p>
+		<div class="progress progress-striped active" style="margin-top:10px;margin-bottom:10px;">
+		  <div id='new_bar' class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: {% widthratio new_num total_num 100%}%" aria-valuemin="0" aria-valuemax="{{total_num}}"></div>
+		</div>
+	</div>
+</div>
+<div id='finish_info' class="text-hide">Congratulations! You have finishing the whole word list! </div>
+<div align="center">
+<a class="btn-teacher btn-lg" href="{% url 'home' %}" align="center">Back to homepage</a>
+</div>
+
+
+{% endblock %}
+
+
+{% block script %}
+<script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>  
+   <script type="text/javascript">
+   var x=0;
+   var main = function(){   
+    $('#know').click(function(){
+ 		x=x+1;
+ 		x=x%5;
+        // get the value of CSRF token
+        var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+       $.post('/card/{{lexicon}}/1/', { 
+           'is_known': true,
+           'times': x,
+           'word': $("#word").text(),
+           csrfmiddlewaretoken: CSRFtoken
+       },function(result){
+       		var new_bar=result['new_num']/result['total_num']*100
+       		var rev_bar=result['rev_num']/result['total_num']*100
+       		var master_bar=result['master_num']/result['total_num']*100
+
+			$("#word").html(result['word']);
+			$("#mean_text").html(result['meaning']);
+			$("#is_new_label").html(result['is_new']);
+			$("#phonetic").html(result['phonetic']);
+			$("#word").html(result['word']);
+			$("#total_num").html(result['total_num']);
+			$("#new_num").html(result['new_num']);
+			$("#rev_num").html(result['rev_num']);
+			$("#master_num").html(result['master_num']);
+			$("#new_bar").attr('style','width:'+new_bar+'%');
+			$("#rev_bar").attr('style','width:'+rev_bar+'%');
+			$("#master_bar").attr('style','width:'+master_bar+'%');
+			if(result['master_num']==result['total_num']){
+				$('#finish_info').attr('class','alert alert-success');
+			}
+			else{
+				$('#finish_info').attr('class','text-hide');
+			}
+		});
+		
+    });
+    $('#not_know').click(function(){
+ 		x=x+1;
+ 		
+        // get the value of CSRF token
+        var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+       $.post('/card/{{lexicon}}/0/', { 
+           'is_known': false,
+           'times': x,
+           'word': $("#word").text(),
+           csrfmiddlewaretoken: CSRFtoken
+       	},function(result){
+       		var new_bar=result['new_num']/result['total_num']*100
+       		var rev_bar=result['rev_num']/result['total_num']*100
+       		var master_bar=result['master_num']/result['total_num']*100
+
+			$("#word").html(result['word']);
+			$("#mean_text").html(result['meaning']);
+			$("#is_new_label").html(result['is_new']);
+			$("#phonetic").html(result['phonetic']);
+			$("#word").html(result['word']);
+			$("#total_num").html(result['total_num']);
+			$("#new_num").html(result['new_num']);
+			$("#rev_num").html(result['rev_num']);
+			$("#master_num").html(result['master_num']);
+			$("#new_bar").attr('style','width:'+new_bar+'%');
+			$("#rev_bar").attr('style','width:'+rev_bar+'%');
+			$("#master_bar").attr('style','width:'+master_bar+'%');
+			if(result['master_num']==result['total_num']){
+				$('#finish_info').attr('class','alert alert-success');
+			}
+			else{
+				$('#finish_info').attr('class','text-hide');
+			}
+
+
+		});
+    });
+	};
+	$(document).ready(main);
+
+</script> 
+
+
+
+{% endblock %}
