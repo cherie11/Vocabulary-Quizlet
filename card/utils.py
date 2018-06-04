@@ -1,5 +1,5 @@
 
-from .models import Word,UserWordList
+from .models import Word,UserWordList,UserPlan
     
 def initUserLexicon(account):
     import sys
@@ -10,5 +10,6 @@ def initUserLexicon(account):
     for word in wordlist:
     	querysetlist.append(UserWordList(user=account.email,word=word))
     UserWordList.objects.bulk_create(querysetlist)
+
 
 

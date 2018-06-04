@@ -3,7 +3,8 @@
 {% block title %}FlashCard{% endblock %}
 
 {% block content %}
-
+<div id='finish_info' class="text-hide"  >Congratulations! You have finishing the whole word list! 
+	<a id='back' href="{% url 'home' %}">  Back home</a></div>
 <div class="myjumbotron p-3 p-md-3 text-dark rounded" align="center">
 	<span class="badge badge-pill badge-info float-right" id='is_new_label'>
 		{%if is_new %}
@@ -53,7 +54,7 @@
 		</div>
 	</div>
 </div>
-<div id='finish_info' class="text-hide">Congratulations! You have finishing the whole word list! </div>
+
 <div align="center">
 <a class="btn-teacher btn-lg" href="{% url 'home' %}" align="center">Back to homepage</a>
 </div>
@@ -100,6 +101,15 @@
 			else{
 				$('#finish_info').attr('class','text-hide');
 			}
+			if(result['is_new']=="Review"){
+				$("#is_new_label").attr('class','badge badge-pill badge-warning float-right');
+			}
+			else if(result['is_new']=="Learning"){
+				$("#is_new_label").attr('class','badge badge-pill badge-danger float-right');
+			}
+			else if(result['is_new']=="Mastered"){
+				$("#is_new_label").attr('class','badge badge-pill badge-success float-right');
+			}
 		});
 		
     });
@@ -130,12 +140,24 @@
 			$("#new_bar").attr('style','width:'+new_bar+'%');
 			$("#rev_bar").attr('style','width:'+rev_bar+'%');
 			$("#master_bar").attr('style','width:'+master_bar+'%');
+
 			if(result['master_num']==result['total_num']){
 				$('#finish_info').attr('class','alert alert-success');
 			}
 			else{
 				$('#finish_info').attr('class','text-hide');
 			}
+			if(result['is_new']=="Review"){
+		
+				$("#is_new_label").attr('class','badge badge-pill badge-warning float-right');
+			}
+			else if(result['is_new']=="Learning"){
+				$("#is_new_label").attr('class','badge badge-pill badge-danger float-right');
+			}
+			else if(result['is_new']=="Mastered"){
+				$("#is_new_label").attr('class','badge badge-pill badge-success float-right');
+			}
+
 
 
 		});

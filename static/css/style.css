@@ -1,32 +1,63 @@
 
 /*默认移动CSS代码*/
-.myjumbotron {
-
-    padding: 2rem 1rem;
-    margin-bottom: 2rem;
-    background-color: #20c3!important; 
-    border-radius: .3rem;
+.bg-dark {
+    background-color: #17x7!important;
 }
+.bg-warning {
+    background-color: #f17c67!important;
+}
+.bg-primary {
+    background-color: #7dcee9!important;
+}
+
+.bg-success {
+    background-color: #ACE1AF!important;
+}
+
+
 .quizjumbotron {
 
     padding: 2rem 1rem;
     margin-bottom: 2rem;
-    background-color: #ffffff!important; 
+    background-color: #f8f9fa!important; 
     border-radius: .3rem;
 }
 
-.jumbotron { 
+.jumbotron_card { 
 			background-color: #20c3!important; 
-			margin-top: 50px;}
-.jumbotron h1 {font-size: 26px; padding-left: 20px;}
-.jumbotron h4 {font-size: 15px; padding-left: 20px;}
+			margin-top: 50px;
+}
+
+.jumbotron h1 {font-size: 50px; padding-left: 20px;}
+.jumbotron h4 {font-size: 18px; padding-left: 20px;}
+
+.modal { 
+    position: fixed; 
+    top: 3%; 
+    right: 3%; 
+    left: 3%; 
+    width: auto; 
+    margin: 0; 
+}
+.modal-body { 
+    height: 60%; 
+}
 
 
+
+.modal-body { 
+    max-height: 350px; 
+    padding: 15px; 
+    overflow-y: auto; 
+    -webkit-overflow-scrolling: touch; 
+ }
 
 /* 小屏幕（平板，大于等于768px） */
 @media (min-width: 768px) {
 .jumbotron h1 {font-size: 26px;}
-.jumbotron h4 {font-size: 15px;}
+.jumbotron h4 {font-size: 13px;}
+
+
 }
 /* 中等屏幕（桌面显示器，大于等于992px） */
 @media (min-width: 992px) {

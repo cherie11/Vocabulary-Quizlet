@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.template import Library
 from .forms import *
-from .models import Lexicon,Word,UserWordList,UserLexicon
+from .models import *
 from django.core.files.storage import FileSystemStorage
 import xlrd 
 from django.views.generic import TemplateView
@@ -12,18 +12,45 @@ from django.shortcuts import render
 import account
 from django.views.decorators.csrf import csrf_exempt
 import random
+from django.utils import timezone
+from django.db.models import Q,F
+import datetime
+from django.contrib.auth.decorators import login_required
 
-#from django.contrib.auth.decorators import login_required
+@login_required
+def setPlan(request):
+	now = timezone.now()
+	if request.method=='POST' and 'plan' in request.POST :
+		learn=UserWordList.objects.filter(date_created__lt=F('date_modified'),date_modified__date=datetime.date.today(),user__user=request.user).count()
+		userplan=UserPlan.objects.get(user=request.user)
+		userplan.amount=request.POST["plan"]
+		userplan.save()
+
+		return render(request, 'home.html', {'learn_num':learn,'plan_num':userplan.amount,'saved_plan': 1})
+	elif request.method=='GET':
+		print(UserWordList.objects.filter(date_created__lt=F('date_modified'),date_modified__date=datetime.date.today(),user__user=request.user))
+		learn=UserWordList.objects.filter(date_created__lt=F('date_modified'),date_modified__date=datetime.date.today(),user__user=request.user).count()
+		userplan=UserPlan.objects.get(user=request.user)
+
+		return render(request, 'home.html', {'learn_num':learn,'plan_num':userplan.amount,'saved_plan': 0})
+	else:
+		learn=UserWordList.objects.filter(date_created__lt=F('date_modified'),date_modified__date=datetime.date.today(),user__user=request.user).count()
+		userplan=UserPlan.objects.get(user=request.user)
+		rtn_dict=addCustomizeWord(request) 
+		rtn_dict['learn_num']=learn
+		rtn_dict['plan_num']=userplan.amount
+		return render(request, 'home.html', rtn_dict)
+
 
 #@login_required
 class UploadWordsView(TemplateView):
-	template_name = 'home.html'
+	template_name = 'card.html'
 
 	def post(self, request, *args, **kwargs):
 		context = self.get_context_data()
 		saved=False
 
-		print(context)
+
 		if form.is_valid():
 			wb=xlrd.open_workbook(filename=None,file_contents=request.FILES.get('lexicon').read())
 			table=wb.sheets()[0]
@@ -54,46 +81,57 @@ class UploadWordsView(TemplateView):
 		context['lexicon'] = form
 		return context
 
-#@login_required
+@login_required
 def detail(request,slug,known,**kwargs):
+	is_new='New'
 	if request.method == 'GET':
-		userword=UserWordList.objects.filter(user__user__email=request.user,is_new=True,word__word__in=Word.objects.filter(belong=slug))	
+		userword=UserWordList.objects.filter(user__user=request.user,is_new=True,word__word__in=Word.objects.filter(belong=slug))	
 				#userword=userwords.objects.filter(belong=slug)
 		if(userword.count()!=0):
 			word=userword[0].word
 		else:
-			userword=UserWordList.objects.filter(user__user__email=request.user,is_new=False,word__word__in=Word.objects.filter(belong=slug)).order_by('-count')
+			userword=UserWordList.objects.filter(user__user=request.user,is_new=False,word__word__in=Word.objects.filter(belong=slug)).order_by('-count')
 			word=userword[0].word
 
 
 	elif request.method == 'POST':
 		userword=None
+		
 		try:
 			#user=account.models.CustomUser.objects.get(email=request.user)
 			#lexicon=Word.objects.filter(belong=slug)#.order_by("word")
 			#userlexicon=UserLexicon.objects.filter(user__email=request.user)
 
 			if known==1:  #know this word
-				userword=UserWordList.objects.get(user__user__email=request.user,word__word=request.POST.get('word'),word__word__in=Word.objects.filter(belong=slug))	
+				userword=UserWordList.objects.get(user__user=request.user,word__word=request.POST.get('word'),word__word__in=Word.objects.filter(belong=slug))	
 				userword.is_new=False
-				rev_words=UserWordList.objects.filter(user__user__email=request.user,count__gt=0,word__word__in=Word.objects.filter(belong=slug)).count()
-				if rev_words==1:
+				rev_words=UserWordList.objects.filter(user__user=request.user,count__gt=0,word__word__in=Word.objects.filter(belong=slug)).count()
+				if rev_words==1:  #only 1 word need review
 					userword.count=0
-				if userword.count>0:
+				if userword.count>0:  #remeber this word
 					userword.count-=1
 			elif known==0:
-				userword=UserWordList.objects.get(user__user__email=request.user,word__word=request.POST.get('word'),word__word__in=Word.objects.filter(belong=slug))	
+				userword=UserWordList.objects.get(user__user=request.user,word__word=request.POST.get('word'),word__word__in=Word.objects.filter(belong=slug))	
 				userword.is_new=False
-				if userword.count<5:
+				if userword.count<5:   #penalty for forget the word
 					userword.count+=1
 			
 			userword.save()
-			userword=UserWordList.objects.filter(user__user__email=request.user,is_new=True,word__word__in=Word.objects.filter(belong=slug))	
-			
-			if userword.count()==0 or int(request.POST.get('times'))%5==0:
-				userword=UserWordList.objects.filter(user__user__email=request.user,is_new=False,word__word__in=Word.objects.filter(belong=slug)).order_by('-count')
-			
-			word=userword[0].word
+			userword=UserWordList.objects.filter(user__user=request.user,is_new=True,word__word__in=Word.objects.filter(belong=slug))	
+
+			if userword.count()==0 or int(request.POST.get('times'))%5==0:   #The word need review beore today
+				userword=UserWordList.objects.filter(~Q(date_modified__date=datetime.date.today()),user__user=request.user,is_new=False,word__word__in=Word.objects.filter(belong=slug)).order_by('-count')
+				is_new='Review'
+			if userword.count()==0 or int(request.POST.get('times'))%3==0:
+				userword=UserWordList.objects.filter(user__user=request.user,count__gt=0,date_modified__date=datetime.date.today(),word__word__in=Word.objects.filter(belong=slug)).order_by('-count')	#Today's need review
+				is_new='Learning'
+			if userword.count()==0 or int(request.POST.get('times'))%7==0:
+				userword=UserWordList.objects.filter(user__user=request.user,count__exact =0,word__word__in=Word.objects.filter(belong=slug))	#Today's need review
+				is_new='Mastered'
+			if is_new=='Mastered' or is_new=='Learning':
+				word=userword[random.randint(0,userword.count()-1)].word
+			else:
+				word=userword[0].word
 
 			
 				
@@ -102,7 +140,7 @@ def detail(request,slug,known,**kwargs):
 		except Lexicon.DoesNotExist:
 			raise Http404('Word doesn\'t exist!')
 
-	own_words=UserWordList.objects.filter(user__user__email=request.user)
+	own_words=UserWordList.objects.filter(user__user=request.user,word__word__in=Word.objects.filter(belong=slug))
 	total_num=own_words.count()
 	new_num=own_words.filter(is_new=True).count()
 	rev_num=own_words.filter(count__gt=0).count()
@@ -111,21 +149,20 @@ def detail(request,slug,known,**kwargs):
 					'lexicon':slug,
 					'meaning':word.meaning,
 					'phonetic':word.phonetic,
-					'is_new': 'New',
+					'is_new': is_new,
 					'total_num':total_num,
 					'new_num':new_num,
 					'rev_num':rev_num,
 					'master_num':master_num,
 					}
-	if userword[0].is_new==False:
 
-		del rtn_dict['is_new']
 	if request.method=='GET':
 		return render(request,'flashcard/card.html',rtn_dict)
 	return JsonResponse(rtn_dict)
 
 
 @csrf_exempt
+@login_required
 def take_quiz(request,slug,id):
 	#num=8
 
@@ -175,6 +212,55 @@ def take_quiz(request,slug,id):
 			return render(request,'flashcard/quiz.html',rtn_dict)
 		return JsonResponse(rtn_dict)
 
+@login_required
+def deleteCustomizeWord(request,slug):	
+	if request.method=='POST':
+		try:
+			word=Word.objects.get(word=slug,belong=request.user)
+			word.delete()
+		except:
+			user_word=CustomizedLexicon.objects.get(word__word = slug)
+			user_word.delete()
+		rtn_dict={
+		'info':"Delete Successfully!"
+		}
+		return JsonResponse(rtn_dict)
+
+
+@login_required
+def addCustomizeWord(request):
+
+	rtn_dict={}
+	if request.method=='POST' and 'new_word' in request.POST:
+		form=CustomizedWordForm(request.POST)
+		if form.is_valid():
+
+			try:
+				word=Word.objects.get(word=request.POST['new_word'],belong=request.user.email)
+				rtn_dict['saved']= 0
+			except:
+				word=Word(word=form.cleaned_data["new_word"],meaning=form.cleaned_data["new_meaning"],phonetic=form.cleaned_data["new_phonetic"],belong=request.user.email)
+				word.save()
+				user=request.user
+				custom=CustomizedLexicon(user=user,word=word)
+				custom.save()
+				rtn_dict['saved']= 1
+
+		
+		
+	else:
+		form = CustomizedWordForm()
+	rtn_dict['form']=form
+	#return render(request, 'home.html', {'form': form,'saved': 2})
+	return rtn_dict
+
+
+@login_required
+def listCustomizeWord(request):
+	
+	if request.method=='GET':
+		all_words=CustomizedLexicon.objects.filter(user__email=request.user)
+		return render(request, 'flashcard/user_words.html', {'words':all_words})
 
 
 

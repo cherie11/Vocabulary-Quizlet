@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block head %}
+ <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"> 
+
+
+
+ {% endblock %}
+
+
+
+{% block title %}FlashCard{% endblock %}
+
+{% block content %}
+
+
+
+<h1>自定义词典</h1>
+<p></p>
+<table id="table1"  
+	   data-click-to-select="true",
+       data-classes="table table-hover "  
+       data-search="true"  
+       searchAlign="left"
+
+       sortClass="String"
+       data-show-refresh="true"   
+       data-show-columns="true"  
+       data-toolbar="#toolbar"></table>  
+	<div id="toolbar">  
+		<button id="delete" type="button" class="btn btn-danger btn-space">
+	        <span aria-hidden="true" class="glyphicon glyphicon-trash"></span>
+	    </button>
+	    <a class="btn btn-info" href="{% url 'home' %}" align="center">Home</a>
+
+    <div class="form-group">  
+        
+    </div>  
+</div>  
+
+
+
+{% endblock %}
+
+
+{% block script %}
+
+
+<script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+
+<!-- Latest compiled and minified Locales -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script> 
+
+
+
+
+<script type="text/javascript">
+/*
+* data-pagination 指定是否启用分页
+* data-page-list 指定分页的页数据量数组 '[5,10]'
+* data-side-pagination 指定分页是否是服务端(server)/客户端(client)
+* 特别说明：
+* 客户端，请求参数：
+* search:文本框内容，在文本框内容改变是自动提交请求
+* order: 排序方式
+* sort:排序列名
+* offset:划过条数
+* limit:要获取的数据的条数
+*
+*/
+var index=0;
+var $table1= $('#table1').bootstrapTable(
+{
+
+    columns: [
+    	{ field: 'state',checkbox:true},
+
+     	{
+     		
+     		field: 'sno', title: '编号', formatter: function (value, row, index) {  
+                //return index + 1;  
+                return '<span class="badge">'+(index+1)+'</span>';  
+            }  
+       	},
+
+        { field: 'word', title: '单词', sortable:true,searchable:true },
+        { field: 'meaning', title: '含义' },
+        { field: 'phonetic', title: '音标' },
+    ],
+    data: [
+    	{% for word in words %}
+    		{
+    		word: '{{ word.word.word }}',
+    		meaning:  '{{ word.word.meaning }}',
+    		phonetic : '{{ word.word.phonetic }}'
+    	},
+    	{% endfor %}
+    ],
+    pagination: true,
+    sidePagination: 'client',
+    pageList:[5,10,20,50],
+    searchOnEnterKey:true,
+   	trimOnSearch:true,
+   	sortOrder: "asc",                   
+
+});
+
+
+$('#delete').click(function () {
+	var ids = $.map($table1.bootstrapTable('getSelections'), function (row) {
+                return row.word;
+	});
+	if(ids==''){
+		alert('请选择删除的单词');
+	}
+	else{
+	$table1.bootstrapTable('remove', {
+                field: 'word',
+                values: ids
+    });
+	}
+    var CSRFtoken = $('input[name=csrfmiddlewaretoken]').val();
+       
+           
+    $.post('/delete/'+ids+'/', { 
+    	csrfmiddlewaretoken: CSRFtoken
+           
+       },function(result){
+
+       	alert(result['info']);
+
+
+    });
+
+            
+});
+
+
+
+</script> 
+
+
+
+{% endblock %}

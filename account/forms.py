@@ -11,6 +11,7 @@ class CustomUserCreationForm(UserCreationForm):
 	class Meta(UserCreationForm.Meta):
 		model = CustomUser
 		fields =  ('email','username')
+
 	def save(self, commit=True):
 		user = super().save(commit=False)
 		user.set_password(self.cleaned_data["password1"])
@@ -23,6 +24,7 @@ class CustomUserCreationForm(UserCreationForm):
 			lexicon.save()
 		
 		utils.initUserLexicon(lexicon)
+		utils.initUserPlan(user)
 		return user
 
 

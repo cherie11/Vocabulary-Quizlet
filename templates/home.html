@@ -4,81 +4,203 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
+{% if user.is_authenticated %}
+<div class="card mb-4 box-shadow">
+          <div class="card-header">
+            <h4 class="my-0 font-weight-normal">学习计划</h4>
+          </div>
+          <div id='plan_info' class="text-hide">恭喜你已经完成今日学习任务！</div>
+          <div class="card-body">
+          <p class="text-muted">今日已学习</p>
+            <h1 class="card-title pricing-card-title">{{learn_num}} <small class="text-muted">/ {{ plan_num }}</small></h1>
+            <ul class="list-unstyled mt-3 mb-4">
+              <li>好好学习</li>
+              <li>天天向上</li>
+            </ul>
 
-<div class="jumbotron p-3 p-md-3 text-white rounded bg-dark">
+            <button type="button" class="btn btn-lg btn-block btn-outline-primary"  data-toggle="modal" data-target="#modalBottom">修改计划</button>
+          </div>
+        </div>
+</li>
+
+                <!-- 上传词典文件 -->
+                <div class="modal fade modal-fullscreen modal-fullscreen-bottom-footer" id="modalBottom" tabindex="-1" role="dialog" aria-labelledby="modalBottomLabel" aria-hidden="true">
+
+                <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">
+                          输入每日背单词量(0~200)
+                        </h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          &times;
+                        </button>
+                      </div>
+                      <form action="{% url 'home' %}" class="" method="post" enctype="multipart/form-data" >
+                      <div class="modal-body">
+                        {% csrf_token %}
+                        <p>学习计划
+                        <input id="id_plan" name="plan" type="number" min="0" max="200" onKeyUp="this.value=this.value.replace(/[^\.\d]/g,'');this.value=this.value.replace('.','');">
+                        </p>
+                        {%if saved_plan == 1 %}
+                         <script type="text/javascript">alert("Successfully Set!")</script>
+                        {% endif %}
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" value="关闭">
+                        </button>
+                        <input type="submit"  class="btn btn-success ml-2" value="设置">
+                      </div>
+                      </form>
+                    
+                    </div><!-- /.modal-content -->
+                  </div><!-- /.modal -->
+                </div>
+          </ul>
+{%endif %}
+
+<div class="jumbotron p-3 p-md-3 text-white rounded bg-success">
 	<div class="col-md-8 px-0">
 		<h1 class="logo">
 			Vocabulary FlashCard
-		</h1>
-		{% if user.is_authenticated %}
-		  Hi {{ user.username }}!
+		</h1 >
 
+		{% if user.is_authenticated %}
+    <h3 class="prompt">
+		  Hi {{ user.username }}!
+    </h3>
 		{% else %}
 
-		  <p class="lead my-3">Create an account to save your progress.It's free and only takes a minute!</p>
-		  <p><a href="{% url 'signup' %}" class="btn btn-primary ml-2">Create Account</a>
+		  <h3 class="prompt my-3">Create an account to save your progress.It's free and only takes a minute!</p>
+		  </h3><a href="{% url 'signup' %}" class="btn btn-primary ml-2">Create Account</a>
 		  	or
 		  	<a href="{% url 'login' %}">Sign in</a>
 
 		  </p>
+
 	</div>
 	
 </div>
-
 {% endif %}
+<!-- 触发模态窗口的按钮 -->
+
+
 
 {% if user.is_authenticated %}
+
+
 <div>
-	
 	<div class="card border-info mb-3">
-			  <img class="card-img-top" src="..." alt="Card image cap">
+			  <img class="card-img-top" src="../static/img/cust_word.png" alt="Card image cap">
 
 			  <div class="card-body text-info">
+			    <h5 class="card-title">My Own words</h5>
+			    <p class="card-text">Manage Your Own words here!</p>
+			    <a href="{% url 'list_all' %}" class="btn btn-info">Check all</a>
+			    <a class="btn btn-outline-secondary" data-toggle="modal" data-target="#myModal1" >Add Word</a>
+			    
+			  </div>
+	</li>
+
+                <!-- 上传词汇-->
+                <div class="modal fade modal-fullscreen modal-fullscreen-bottom-footer" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="modalBottomLabel" aria-hidden="true">
+
+                <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        
+                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          &times;
+                        </button>
+                        <h4 class="text-primary" id="myModalLabel1" >
+                          Upload Your Own Word
+                        </h4>
+                      </div>
+                      <form action="" class="" method="post" enctype="multipart/form-data" >
+                      <div class="modal-body">
+                        {% csrf_token %}
+
+                        <p class="text-muted">词汇
+                        <input id="id_name" name="new_word" type="text">
+                        </p>
+                        <p class="text-muted">含义
+                        <input id="id_meaning" name="new_meaning" type="text">
+                        </p >
+                        <p class="text-muted">音标
+                        <input id="id_phonetic" name="new_phonetic" type="text">
+                        </p>
+                        
+                        {%if saved == 1 %}
+                         <script type="text/javascript">alert("Successfully Upload!")</script>
+                        
+                        {%elif saved == 0 %}
+                        	<script type="text/javascript">alert("This word already existed!")</script>
+                        {% endif %}
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                        </button>
+                        <input type="submit"  class="btn btn-success ml-2" value="添加">
+                      </div>
+                      </form>
+
+                    
+                    </div><!-- /.modal-content -->
+                  </div><!-- /.modal -->
+                </div>
+
+
+
+          </ul>
+	</div>
+
+	<div class="card border-danger mb-3">
+			  <img class="card-img-top" src="../static/img/toefl.png" alt="Card image cap">
+
+			  <div class="card-body text-danger">
 			    <h5 class="card-title">Tofel words 1</h5>
-			    <p class="card-text">0 of 50 words mastered</p>
-			    <a href="{% url 'lexicon' slug='toefl' known=2 %}" class="btn btn-info">Practice this deck</a>
+			    <p class="card-text">托福基本词汇</p>
+			    <a href="{% url 'lexicon' slug='toefl' known=2 %}" class="btn btn btn-danger">Practice this deck</a>
 			    <a href="{% url 'quiz' slug='toefl' id='0' %}" class="btn btn-outline-secondary">Quiz</a>
+
 			  </div>
 	</div>
 	<div class="card border-success mb-3">
-			  <img class="card-img-top" src="..." alt="Card image cap">
+			  <img class="card-img-top" src="../static/img/gre.png" alt="Card image cap">
 
 			  <div class="card-body text-success">
-			    <h5 class="card-title">SAT words 2</h5>
-			    <p class="card-text">0 of 50 words mastered</p>
-			    <a href="{% url 'card' %}" class="btn btn-success">Practice this deck</a>
-			    <a href="{% url 'card' %}" class="btn btn-success">Quiz</a>
+			    <h5 class="card-title">GRE words 2</h5>
+			    <p class="card-text">GRE核心词汇</p>
+			    <a href="{% url 'lexicon' slug='gre' known=2 %}" class="btn btn-success">Practice this deck</a>
+			    <a href="{% url 'quiz' slug='gre' id='0' %}" class="btn btn-outline-secondary">Quiz</a>
 			  </div>
 	</div>
-	<div class="card border-warning mb-3">
-			  <img class="card-img-top" src="..." alt="Card image cap">
 
-			  <div class="card-body text-warning">
-			    <h5 class="card-title">Toefl words list 1 </h5>
-			    <p class="card-text">0 of 50 words mastered</p>
-			    <a href="{% url 'card' %}" class="btn btn-warning">Practice this deck</a>
-			  </div>
-	</div>
-	<div class="card border-danger mb-3">
-			  <img class="card-img-top" src="..." alt="Card image cap">
-
-			  <div class="card-body text-danger">
-			    <h5 class="card-title">Toefl words list 2</h5>
-			    <p class="card-text">0 of 50 words mastered</p>
-			    <a href="{% url 'card' %}" class="btn btn-danger">Practice this deck</a>
-			  </div>
-	</div>
 </div>
 
 {% else %}
 <div></div>
 {% endif %}
 
+{% endblock %}
 
-
-
-
-
+{% block script %}
+<script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>  
+   <script type="text/javascript">
   
+var main = function(){ 
+	if({{learn_num}}<{{plan_num}}){
+		$('#plan_info').attr('class','text-hide');
+	}
+	else{
+		$('#plan_info').attr('class','alert alert-success');
+	}
+ };
+$(document).ready(main);
+
+ </script> 
+
+
 
 {% endblock %}

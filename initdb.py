@@ -21,7 +21,10 @@ def main():
 	django.setup()
 	filename='file/lexicon.xlsx'
 	lexicon_name='toefl'
+	#filename='file/lexicon_gre.xlsx'
+	#lexicon_name='gre'
 	create_lexicon(filename,lexicon_name)
+
 
  
  

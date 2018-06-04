@@ -14,18 +14,20 @@ class LexiconForm(forms.Form):
 	class Meta:
    		model=Lexicon
    		fields=('name','lexicon')
-
+'''
 class CustomizedLexiconForm(forms.Form):
 	words = forms.FileField(validators=[validate_excel])
 	class Meta:
    		model=CustomizedLexicon
    		fields=('user','words')
+'''
+
+class CustomizedWordForm(forms.Form):
+	new_word=forms.CharField(label='输入单词',max_length=50,required=True) 
+	new_meaning=forms.CharField(label='含义',max_length=200,required=True)
+	new_phonetic=forms.CharField(label='音标',max_length=100,required=True)
 
 
-	'''
-	def is_valid(self):
 
-		if os.path.splitext(self.data['name'])[-1]!='.xls':
-   			raise forms.ValidationError("Wrong Format!")
-		return data
-	'''
+
+

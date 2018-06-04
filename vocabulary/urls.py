@@ -16,16 +16,24 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include,re_path
 from django.views.generic.base import TemplateView
-from card.views import UploadWordsView
+from card.views import addCustomizeWord,listCustomizeWord,deleteCustomizeWord,setPlan
 #import auth
 urlpatterns = [
 
     path('admin/', admin.site.urls),
-    path('',UploadWordsView.as_view(), name='home'),
-    #path('', TemplateView.as_view(template_name='home.html'), name='home'),
+   
+    path('l_cust_word/', listCustomizeWord, name='list_all'),
+    
+    path('delete/<slug:slug>/', deleteCustomizeWord, name='delete'),
+    #path('main/',addCustomizeWord, name='add_own'),
+    path('main/',setPlan,name='home'),
+
+    #path('',UploadWordsView.as_view(), name='home'),
+    path('', TemplateView.as_view(template_name='home.html'), name='main'),
+
     #path(r'^uplaod/',UploadWords , name = 'upload'),
-    re_path(r'^account/', include('django.contrib.auth.urls')),
-    path('account/', include('account.urls')),
+    re_path(r'^accounts/', include('django.contrib.auth.urls')),
+    path('accounts/', include('account.urls')),
     re_path(r'^card/',include('card.urls')),
     
 

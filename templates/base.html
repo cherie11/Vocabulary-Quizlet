@@ -8,20 +8,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{% static 'css/app.css' %}">
     <title>{% block title %}VocabularyKiller{% endblock title %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}"/>
-    <link rel="stylesheet" href="{% static 'css/code.css' %}"/>
+   
+    <link href="{% static 'bootstrap4-fs-modal/dist/css/bootstrap-fs-modal.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/blue.css' %}" rel="stylesheet">
     <link href='http://fonts.googleapis.com/css?family=Bree+Serif' rel='stylesheet' type='text/css'>
-
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.css">
+    <link rel="stylesheet" href="{% static 'css/code.css' %}"/>
+  
+    {% block head %} {% endblock%}
 
     
+    
   </head>
-  <body>
+  <body >
+
     <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-4">
-      <a class="navbar-brand" href="{% url 'home' %}">Vocabulary Killer</a>
+      <h4 class="navbar-brand logo" href="{% url 'home' %}">Vocabulary Killer</h4>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -40,7 +47,7 @@
                 <div class="dropdown-divider"></div>
                 
                 <a class="dropdown-item" data-toggle="modal" data-target="#myModal">
-                  Customize Your Own Lexicon
+                  Set plan
                 </a>
 
             </li>
@@ -51,7 +58,7 @@
                     <div class="modal-content">
                       <div class="modal-header">
                         <h4 class="modal-title" id="myModalLabel">
-                          Upload Your Own Lexicon (xlsx foramt)
+                          输入每日背单词量(0~200)
                         </h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                           &times;
@@ -61,10 +68,10 @@
                       <form class="" method="post" enctype="multipart/form-data" >
                       <div class="modal-body">
                         {% csrf_token %}
-                        <p>词库名
-                        <input id="id_name" name="name" type="text">
+                        <p>学习计划
+                        <input id="id_plan" name="plan" type="number" min="0" max="200" onKeyUp="this.value=this.value.replace(/[^\.\d]/g,'');this.value=this.value.replace('.','');">
                         </p>
-                        <input id="id_lexicon" name="lexicon" type="file">
+                        
                         {%if saved %}
                          <p>Successfully Upload!</p>
                         {% endif %}
@@ -72,7 +79,7 @@
                       <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">关闭
                         </button>
-                        <input type="submit"  class="btn btn-success ml-2" value="上传">
+                        <input type="submit"  class="btn btn-success ml-2" value="设置">
                       </div>
                       </form>
                     

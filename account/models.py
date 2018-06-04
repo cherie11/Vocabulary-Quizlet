@@ -8,7 +8,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 class CustomUserManager(BaseUserManager):   
     def create_user(self, username,email, password=None, **kwargs):
         # Ensure that an email address is set
-        if email:
+        if not email:
             raise ValueError('Users must have a valid e-mail address')
         if not username:
             raise ValueError('Users must have a valid username')
