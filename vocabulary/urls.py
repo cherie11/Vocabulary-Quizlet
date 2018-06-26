@@ -25,13 +25,11 @@ urlpatterns = [
     path('l_cust_word/', listCustomizeWord, name='list_all'),
     
     path('delete/<slug:slug>/', deleteCustomizeWord, name='delete'),
-    #path('main/',addCustomizeWord, name='add_own'),
+
     path('main/',setPlan,name='home'),
 
-    #path('',UploadWordsView.as_view(), name='home'),
     path('', TemplateView.as_view(template_name='home.html'), name='main'),
 
-    #path(r'^uplaod/',UploadWords , name = 'upload'),
     re_path(r'^accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('account.urls')),
     re_path(r'^card/',include('card.urls')),

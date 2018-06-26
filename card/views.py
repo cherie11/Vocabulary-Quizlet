@@ -20,6 +20,7 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def setPlan(request):
 	now = timezone.now()
+	print('我')
 	if request.method=='POST' and 'plan' in request.POST :
 		learn=UserWordList.objects.filter(date_created__lt=F('date_modified'),date_modified__date=datetime.date.today(),user__user=request.user).count()
 		userplan=UserPlan.objects.get(user=request.user)
@@ -39,6 +40,7 @@ def setPlan(request):
 		rtn_dict=addCustomizeWord(request) 
 		rtn_dict['learn_num']=learn
 		rtn_dict['plan_num']=userplan.amount
+		rtn_dict['saved_plan']=0
 		return render(request, 'home.html', rtn_dict)
 
 

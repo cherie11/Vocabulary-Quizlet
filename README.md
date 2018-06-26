@@ -12,6 +12,8 @@
     pip3 install -r requirements.txt
     python3 manage.py makemigrations --empty account
     python3 manage.py makemigrations --empty card
+    python3 manage.py makemigrations
+    python3 manage.py migrate account
     python3 manage.py migrate
     python3 initdb.py
     python3 manage.py runserver
