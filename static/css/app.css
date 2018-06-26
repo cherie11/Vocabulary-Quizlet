@@ -1,6 +1,24 @@
+.logo1 {
+  font-family: 'Microsoft YaHei';
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 400;
+
+}
+
+
+
+
+.logo1 a {
+  color:  #343a40;
+  text-decoration: none;
+}
+
 .logo {
-  font-family: 'Clicker Script', cursive;
-  color: #B87333;
+  font-family: 'Microsoft YaHei';
+  color: #343a40;
+  font-size: 2rem;
+  font-weight: 400;
 
 }
 
@@ -8,13 +26,13 @@
 
 
 .logo a {
-  color:  #B87333;
+  color:  #343a40;
   text-decoration: none;
 }
 
 .prompt {
   font-family: 'Clicker Script', cursive;
-  color:  #B87333;
+  color:  #343a40;
 }
 
 footer {
@@ -31,6 +49,8 @@ footer a {
     margin-bottom: 2rem;
     background-color: #f8f9ff!important; 
     border-radius: .3rem;
+
+
 }
 
 

@@ -62,7 +62,7 @@
 <div class="jumbotron p-3 p-md-3 text-white rounded bg-success">
 	<div class="col-md-8 px-0">
 		<h1 class="logo">
-			Vocabulary FlashCard
+			词说
 		</h1 >
 
 		{% if user.is_authenticated %}
@@ -72,9 +72,9 @@
 		{% else %}
 
 		  <h3 class="prompt my-3">Create an account to save your progress.It's free and only takes a minute!</p>
-		  </h3><a href="{% url 'signup' %}" class="btn btn-primary ml-2">Create Account</a>
+		  </h3><a href="{% url 'signup' %}" class="btn btn-primary ml-2">注册用户</a>
 		  	or
-		  	<a href="{% url 'login' %}">Sign in</a>
+		  	<a href="{% url 'login' %}">登录</a>
 
 		  </p>
 
@@ -116,7 +116,7 @@
                           Upload Your Own Word
                         </h4>
                       </div>
-                      <form action="" class="" method="post" enctype="multipart/form-data" >
+                      <form action="" class="" method="post" enctype="multipart/form-data"  onSubmit="return beforeSubmit(this);">
                       <div class="modal-body">
                         {% csrf_token %}
 
@@ -141,7 +141,7 @@
                       <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">关闭
                         </button>
-                        <input type="submit"  class="btn btn-success ml-2" value="添加">
+                        <input type="submit"  class="btn btn-success ml-2" value="添加" onclick="validation()">
                       </div>
                       </form>
 
@@ -198,6 +198,51 @@ var main = function(){
 	}
  };
 $(document).ready(main);
+
+function beforeSubmit(form){
+  var reg=/^[a-zA-Z]*$/;
+  if(!reg.test(form.new_word.value))
+  {
+    alert("只能输入字母！");
+    form.new_word.focus();
+    return false;
+  }
+  if(form.new_word.value==''){
+    alert('单词不能为空！');
+    form.new_word.focus();
+    return false;
+  }
+  if(form.new_word.value.length>30){
+    alert('单词过长');
+    form.new_word.focus();
+    return false;
+  }
+  if(form.new_meaning.value.length>30){
+    alert('释义过长');
+    form.new_meaning.focus();
+    return false;
+  }
+  if(form.new_phonetic.value.length>30){
+    alert('音标过长');
+    form.new_phonetic.focus();
+    return false;
+  }
+
+  if(form.new_meaning.value==''){
+    alert('释义不能为空');
+    form.new_meaning.focus();
+    return false;
+  }
+  if(form.new_phonetic.value.length<6){
+    alert('音标不能为空');
+    form.new_phonetic.focus();
+    return false;
+  }
+  
+  return true;
+}
+
+
 
  </script> 
 

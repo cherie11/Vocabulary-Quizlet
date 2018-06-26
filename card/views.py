@@ -98,10 +98,6 @@ def detail(request,slug,known,**kwargs):
 		userword=None
 		
 		try:
-			#user=account.models.CustomUser.objects.get(email=request.user)
-			#lexicon=Word.objects.filter(belong=slug)#.order_by("word")
-			#userlexicon=UserLexicon.objects.filter(user__email=request.user)
-
 			if known==1:  #know this word
 				userword=UserWordList.objects.get(user__user=request.user,word__word=request.POST.get('word'),word__word__in=Word.objects.filter(belong=slug))	
 				userword.is_new=False
@@ -120,22 +116,29 @@ def detail(request,slug,known,**kwargs):
 			userword=UserWordList.objects.filter(user__user=request.user,is_new=True,word__word__in=Word.objects.filter(belong=slug))	
 
 			if userword.count()==0 or int(request.POST.get('times'))%5==0:   #The word need review beore today
-				userword=UserWordList.objects.filter(~Q(date_modified__date=datetime.date.today()),user__user=request.user,is_new=False,word__word__in=Word.objects.filter(belong=slug)).order_by('-count')
+				word=UserWordList.objects.filter(~Q(date_modified__date=datetime.date.today()),user__user=request.user,is_new=False,word__word__in=Word.objects.filter(belong=slug)).order_by('-count')
 				is_new='Review'
+				if(word.count()!=0):
+					userword=word
 			if userword.count()==0 or int(request.POST.get('times'))%3==0:
-				userword=UserWordList.objects.filter(user__user=request.user,count__gt=0,date_modified__date=datetime.date.today(),word__word__in=Word.objects.filter(belong=slug)).order_by('-count')	#Today's need review
+				word=UserWordList.objects.filter(user__user=request.user,count__gt=0,date_modified__date=datetime.date.today(),word__word__in=Word.objects.filter(belong=slug)).order_by('-count')	#Today's need review
+				if(word.count()!=0):
+					userword=word
 				is_new='Learning'
 			if userword.count()==0 or int(request.POST.get('times'))%7==0:
-				userword=UserWordList.objects.filter(user__user=request.user,count__exact =0,word__word__in=Word.objects.filter(belong=slug))	#Today's need review
+				word=UserWordList.objects.filter(user__user=request.user,count__exact =0,word__word__in=Word.objects.filter(belong=slug))	#Today's need review
+				if(word.count()!=0):
+					userword=word
 				is_new='Mastered'
+			if userword.count()==0 or int(request.POST.get('times'))%2==0:
+				word=UserWordList.objects.filter(~Q(date_modified__date=datetime.date.today()),user__user=request.user,is_new=False,word__word__in=Word.objects.filter(belong=slug)).order_by('-date_modified')
+				if(word.count()!=0):
+					userword=word
+				is_new='Review'
 			if is_new=='Mastered' or is_new=='Learning':
 				word=userword[random.randint(0,userword.count()-1)].word
 			else:
 				word=userword[0].word
-
-			
-				
-
 
 		except Lexicon.DoesNotExist:
 			raise Http404('Word doesn\'t exist!')

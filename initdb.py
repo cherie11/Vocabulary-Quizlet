@@ -19,10 +19,12 @@ def create_lexicon(filename,lexicon_name):
 def main():
 	os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vocabulary.settings")
 	django.setup()
-	filename='file/lexicon.xlsx'
+	filename='file/lexicon_toefl.xlsx'
 	lexicon_name='toefl'
-	#filename='file/lexicon_gre.xlsx'
-	#lexicon_name='gre'
+
+	create_lexicon(filename,lexicon_name)
+	filename='file/lexicon_gre.xlsx'
+	lexicon_name='gre'
 	create_lexicon(filename,lexicon_name)
 
 

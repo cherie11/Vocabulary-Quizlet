@@ -9,15 +9,15 @@
  		<div align="center">
       <img class="mb-4" src="../../static/img/login.png" width="72" height="72">
       </div>
-      <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+      <h1 class="h3 mb-3 font-weight-normal">请输入邮箱和密码登录</h1>
       {% csrf_token %}
   	  <label for="inputEmail" class="sr-only">Email address</label>
       <input type="email" id="id_username"name="username" class="form-control" placeholder="Email address" required autofocus>
       <label for="inputPassword" class="sr-only">Password</label>
       <input type="password" id="id_password" name="password" class="form-control" placeholder="Password" required>
 
-      <button class="btn btn-lg btn-success btn-block" type="submit">Sign in</button>
-      <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
+      <button class="btn btn-lg btn-success btn-block" type="submit">登录</button>
+      
     </form>
 
 
