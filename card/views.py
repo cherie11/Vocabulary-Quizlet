@@ -20,7 +20,7 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def setPlan(request):
 	now = timezone.now()
-	print('我')
+	
 	if request.method=='POST' and 'plan' in request.POST :
 		learn=UserWordList.objects.filter(date_created__lt=F('date_modified'),date_modified__date=datetime.date.today(),user__user=request.user).count()
 		userplan=UserPlan.objects.get(user=request.user)
